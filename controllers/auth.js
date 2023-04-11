@@ -60,7 +60,27 @@ export const login = async (req, res) => {
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
     delete user.password;
-    res.status(200).json({ token, user, msg: "Logged In Successfully." });
+
+    await user.save();
+    const userData = {
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      picturePath: user.picturePath,
+      friends: user.friends,
+      location: user.location,
+      occupation: user.occupation,
+      viewedProfile: user.viewedProfile,
+      impressions: user.impressions,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      __v: user.__v,
+    };
+    console.log({ userData });
+    res
+      .status(200)
+      .json({ token, user: userData, msg: "Logged In Successfully." });
   } catch (error) {
     res.status(500).json({
       error: error.message || "Error while logging in.",
